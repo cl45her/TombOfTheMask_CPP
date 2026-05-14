@@ -7,89 +7,61 @@
 
 class Game {
 private:
-    float tileSize = 35.f;
+    float tileSize = 40.f;
     sf::RenderWindow window;
     Map gameMap;
     Player player;
-    
-  
-    sf::RectangleShape xpBarBack;
-    sf::RectangleShape xpBarFront;
-    int maxPoints = 0;
+    sf::RectangleShape xpBar;
+    int totalDots = 0;
 
 public:
-    Game() : 
-        window(sf::VideoMode({420, 700}), "Tomb of the Mask"), 
-        gameMap(tileSize), 
-        player(tileSize) 
-    {
+    Game() : window(sf::VideoMode({480, 600}), "Tomb of the Mask"), gameMap(tileSize), player(tileSize) {
         player.setPosition({tileSize * 1.5f, tileSize * 1.5f});
-        
-       
-        xpBarBack.setSize({300.f, 20.f});
-        xpBarBack.setFillColor(sf::Color(50, 50, 50));
-        xpBarBack.setPosition({60.f, 20.f});
+        xpBar.setFillColor(sf::Color::Yellow);
+        xpBar.setPosition({10, 10});
 
-        xpBarFront.setFillColor(sf::Color::Yellow);
-        xpBarFront.setPosition({60.f, 20.f});
-
-        
-        for(const auto& row : gameMap.getGrid())
-            for(int cell : row) if(cell == 0) maxPoints++;
+        for (auto& row : gameMap.getGrid()) 
+            for (int cell : row) if (cell == 0) totalDots++;
     }
 
     void run() {
         while (window.isOpen()) {
-            processEvents();
+            handleInput();
             update();
             render();
         }
     }
 
 private:
-    void processEvents() {
+    void handleInput() {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) window.close();
-
-            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                sf::Vector2f dir{0.f, 0.f};
-                if (keyPressed->code == sf::Keyboard::Key::Left)  dir.x = -tileSize;
-                else if (keyPressed->code == sf::Keyboard::Key::Right) dir.x = tileSize;
-                else if (keyPressed->code == sf::Keyboard::Key::Up)    dir.y = -tileSize;
-                else if (keyPressed->code == sf::Keyboard::Key::Down)  dir.y = tileSize;
-
-                if (dir.x != 0 || dir.y != 0) {
-                    player.moveUntilWall(dir, gameMap.getGrid());
-                }
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                sf::Vector2f dir(0, 0);
+                if (key->code == sf::Keyboard::Key::Up) dir.y = -tileSize;
+                else if (key->code == sf::Keyboard::Key::Down) dir.y = tileSize;
+                else if (key->code == sf::Keyboard::Key::Left) dir.x = -tileSize;
+                else if (key->code == sf::Keyboard::Key::Right) dir.x = tileSize;
+                
+                if (dir != sf::Vector2f(0, 0)) player.moveUntilWall(dir, gameMap.getGrid());
             }
         }
     }
 
     void update() {
         int collected = 0;
-        for(const auto& row : gameMap.getGrid())
-            for(int cell : row) if(cell == -1) collected++;
+        for (auto& row : gameMap.getGrid()) 
+            for (int cell : row) if (cell == -1) collected++;
         
-        float progress = (maxPoints > 0) ? (float)collected / maxPoints : 0;
-        xpBarFront.setSize({300.f * progress, 20.f});
+        float progress = (totalDots > 0) ? (float)collected / totalDots : 0;
+        xpBar.setSize({460.f * progress, 10.f});
     }
 
     void render() {
         window.clear(sf::Color::Black);
-        
-        
-        sf::View gameView = window.getDefaultView();
-        gameView.setCenter({210.f, 310.f}); 
-        window.setView(gameView);
-        
         gameMap.draw(window);
         player.draw(window);
-        
-       
-        window.setView(window.getDefaultView());
-        window.draw(xpBarBack);
-        window.draw(xpBarFront);
-        
+        window.draw(xpBar);
         window.display();
     }
 };
