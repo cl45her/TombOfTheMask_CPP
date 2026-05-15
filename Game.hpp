@@ -37,20 +37,20 @@ public:
             float dt = cl.restart().asSeconds();
             p.update(dt, m);
 
-            // Активируем тряску при ударе
+            
             if (p.justHit) shakeIntensity = 8.0f;
 
-            // Камера с эффектом тряски
+            
             float targetScroll = p.pos.y - 400.0f;
             scrollY += (targetScroll - scrollY) * 0.15f;
 
             float currentScroll = scrollY;
             if (shakeIntensity > 0.1f) {
                 currentScroll += (std::rand() % 10 - 5) * (shakeIntensity / 10.0f);
-                shakeIntensity *= 0.85f; // Затухание тряски
+                shakeIntensity *= 0.85f; 
             }
 
-            window.clear(sf::Color(10, 10, 15)); // Темно-синий фон
+            window.clear(sf::Color(10, 10, 15)); 
             m.draw(window, currentScroll);
             p.draw(window, currentScroll);
             window.display();

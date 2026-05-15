@@ -18,7 +18,7 @@ public:
     int sectionHeight = 11;
     std::vector<int> activeSections;
 
-    // ТВОИ РАБОЧИЕ МАССИВЫ
+    
     std::vector<Pattern> patterns = {
         {
             {
@@ -48,7 +48,7 @@ public:
 
     Map() {
         std::srand(static_cast<unsigned>(std::time(nullptr)));
-        // Генерируем цепочку из 500 секций
+        
         for (int i = 0; i < 500; i++) {
             activeSections.push_back(std::rand() % (int)patterns.size());
         }
@@ -57,7 +57,7 @@ public:
     int getTile(int x, int y) {
         if (x < 0 || x >= width) return 1;
         
-        // Математика для бесконечного движения вверх
+        
         int secIdx = (y >= 0) ? (y / sectionHeight) : (int)std::floor((float)y / (float)sectionHeight);
         int listIdx = std::abs(secIdx) % (int)activeSections.size();
         int patternID = activeSections[listIdx];
@@ -73,16 +73,16 @@ public:
         sf::RectangleShape innerWall({tSize - 6.0f, tSize - 6.0f});
         
         int startY = static_cast<int>(std::floor(scrollY / tSize));
-        // Отрисовка видимой области с небольшим запасом
+        
         for (int i = startY - 2; i < startY + 25; i++) {
             for (int j = 0; j < width; j++) {
                 if (getTile(j, i) == 1) {
-                    // Темная подложка (рамка)
+                    
                     wall.setFillColor(sf::Color(0, 120, 50));
                     wall.setPosition({(float)j * tSize, (float)i * tSize - scrollY});
                     window.draw(wall);
 
-                    // Яркая плитка
+                    
                     innerWall.setFillColor(sf::Color(0, 255, 100));
                     innerWall.setPosition({(float)j * tSize + 3.0f, (float)i * tSize + 3.0f - scrollY});
                     window.draw(innerWall);

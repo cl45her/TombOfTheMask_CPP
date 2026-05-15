@@ -11,11 +11,11 @@ public:
     sf::Vector2f pos;
     sf::Vector2f moveDir;
     bool moving = false;
-    bool justHit = false; // Флаг для тряски экрана
+    bool justHit = false; 
     float s = 40.0f;
     float speed = 1300.0f;
 
-    // Очередь для хранения хвоста
+    
     std::deque<sf::Vector2f> trail;
     const size_t maxTrail = 8;
 
@@ -33,7 +33,7 @@ public:
     void update(float dt, Map& m) {
         justHit = false;
         if (moving) {
-            // Сохраняем позицию для шлейфа
+            
             trail.push_front(pos);
             if (trail.size() > maxTrail) trail.pop_back();
 
@@ -42,12 +42,12 @@ public:
                 pos = next;
             } else {
                 moving = false;
-                justHit = true; // Сообщаем об ударе
+                justHit = true; 
                 pos.x = std::round((pos.x - s/2.0f) / s) * s + s/2.0f;
                 pos.y = std::round((pos.y - s/2.0f) / s) * s + s/2.0f;
             }
         } else {
-            if (!trail.empty()) trail.pop_back(); // Плавно убираем хвост при остановке
+            if (!trail.empty()) trail.pop_back(); 
         }
     }
 
@@ -62,7 +62,7 @@ public:
     }
 
     void draw(sf::RenderWindow& win, float scrollY) {
-        // Рисуем шлейф
+        
         for (size_t i = 0; i < trail.size(); ++i) {
             sf::RectangleShape tShape({20.0f - i*2, 20.0f - i*2});
             tShape.setOrigin(tShape.getSize() / 2.0f);
@@ -71,14 +71,14 @@ public:
             win.draw(tShape);
         }
 
-        // Тело маски
+        
         sf::RectangleShape body({26.0f, 26.0f});
         body.setOrigin({13.0f, 13.0f});
         body.setFillColor(sf::Color::Yellow);
         body.setPosition({pos.x, pos.y - scrollY});
         win.draw(body);
 
-        // Глаза
+        
         sf::RectangleShape eye({6.0f, 6.0f});
         eye.setFillColor(sf::Color::Black);
         eye.setPosition({pos.x - 8.0f, pos.y - 5.0f - scrollY});
